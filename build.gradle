@@ -1,0 +1,97 @@
+import vn.quantda.apiBoot.task.SampleTask
+
+buildscript {
+	repositories{
+		mavenCentral()
+	}
+	dependencies {
+		classpath gradleApi()
+		classpath localGroovy()
+	}
+}
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'groovy'
+}
+
+repositories {
+	mavenCentral()
+}
+sourceSets {
+	main {
+		java {
+			srcDir 'buildSrc/src/main/groovy'
+		}
+		resources {
+			srcDir 'buildSrc/src/main/resources'
+		}
+	}
+}
+group 'vn.quantda'
+version '1.0'
+
+dependencies {
+	compileOnly gradleApi()
+	implementation localGroovy()
+}
+
+task hello (type: SampleTask) {
+	helloName 'Quan'
+	
+	doFirst {
+		println 'before'
+	}
+	doLast {
+		println 'SampleTask done'
+	}
+}
+
+task watch (type: vn.quantda.apiBoot.task.StartWebServerTask) {
+	projectPath 'C:/programming/eclipse-javaee-workspace/api-boot/server'
+	outLogPath 'C:/programming/eclipse-javaee-workspace/api-boot/logs/out.log'
+	errLogPath 'C:/programming/eclipse-javaee-workspace/api-boot/logs/err.log'
+	doFirst {
+		println 'Start watching'
+	}
+	doLast {
+		println 'End task'
+	}
+}
+
+task stopWatching {
+	doFirst {
+		println 'Stop watching'
+		if (tasks.watch.process != null) {
+			tasks.watch.process.destroy()
+		}
+	}
+}
+
+task backend(type: vn.quantda.apiBoot.task.StartBackendServerTask) {
+	targetDirPath 'C:/programming/eclipse-javaee-workspace/api-boot/server'
+	logDirPath 'C:/programming/eclipse-javaee-workspace/api-boot/logs'
+	port 8484
+	waitSeconds 30
+	doFirst {
+		println "Trying new ServerTask"
+	}
+	doLast {
+		println "End trying"
+	}
+}
+task frontend(type: vn.quantda.apiBoot.task.StartFrontEndServerTask) {
+	targetDirPath 'C:/programming/eclipse-javaee-workspace/api-boot/frontend'
+	logDirPath 'C:/programming/eclipse-javaee-workspace/api-boot/logs'
+	port 4000
+	waitSeconds 30
+	outLogFileName 'front.log'
+	errLogFileName 'err-front.log'
+	doFirst {
+		println "Trying new FrontEnd ServerTask"
+	}
+	doLast {
+		println "End trying"
+	}
+}
+
